@@ -1,12 +1,9 @@
 <?php
-// pages/class-schedule-page.php
-
-// --- 1. Get all semesters to populate the dropdown ---
+// --- Get all semesters to populate the dropdown ---
 $semesters_stmt = $pdo->query("SELECT * FROM semesters ORDER BY id DESC");
 $all_semesters = $semesters_stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// --- 2. Determine the selected semester ID ---
-// Default to the first semester in the list if none is selected via GET request.
+// --- Determine the selected semester ID ---
 $selected_semester_id = $_GET['semester_id'] ?? ($all_semesters[2]['id'] ?? null);
 
 // Initialize schedule array
@@ -14,9 +11,8 @@ $weekly_schedule = [
     'Sunday' => [], 'Monday' => [], 'Tuesday' => [], 'Wednesday' => [], 'Thursday' => [], 'Friday' => [], 'Saturday' => []
 ];
 
-// --- 3. Fetch schedule ONLY if a semester is selected ---
+// --- Fetch schedule ONLY if a semester is selected ---
 if ($selected_semester_id) {
-    // Corrected query to use the $selected_semester_id
     $stmt = $pdo->prepare("
         SELECT c.course_code, c.title, s.schedule_time, s.room
         FROM registrations rg
@@ -82,7 +78,6 @@ if ($selected_semester_id) {
 
     <div class="card full-width" style="margin-top: 1.5rem; box-shadow: none; border: 1px solid #eee;">
         <div class="card-header" style="border-radius: var(--border-radius) var(--border-radius) 0 0;">
-            <!-- Correctly display the selected semester's name -->
             <h2 id="class-schedule-semester-title">
                 <i class="fas fa-calendar-week"></i> Weekly Schedule - 
                 <?php 

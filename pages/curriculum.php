@@ -1,5 +1,4 @@
 <?php
-// pages/curriculum.php
 
 $stmt = $pdo->prepare("
     SELECT cur.semester_level, c.course_code, c.title, c.credits, c.course_type

@@ -1,8 +1,5 @@
 <?php
-// pages/academic-calendar-page.php
 
-// Fetch all events for the current academic calendar (e.g., Spring 2024)
-// In a real system, you might filter this by a selected semester.
 $stmt = $pdo->query("SELECT * FROM academic_calendar ORDER BY event_date ASC");
 $all_events = $stmt->fetchAll();
 
@@ -18,8 +15,6 @@ foreach ($all_events as $event) {
 
 // Helper function to format date ranges
 function format_event_date($event) {
-    // This is a simplified version. A more complex function could handle date ranges.
-    // For now, we just format the single date.
     return date('d (D)', strtotime($event['event_date']));
 }
 

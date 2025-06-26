@@ -7,27 +7,20 @@ $stmt = $pdo->prepare("SELECT * FROM students WHERE id = ?");
 $stmt->execute([$_SESSION['user_id']]);
 $current_student = $stmt->fetch();
 if (!$current_student) {
-    // Should not happen if auth_check is working, but as a safeguard
     header('Location: logout.php');
     exit;
 }
 
 // --- NEW SESSION-BASED SEMESTER LOGIC ---
-// If a semester_id is passed in the URL (from a dropdown change), update the session.
 if (isset($_GET['semester_id'])) {
     $_SESSION['selected_semester_id'] = (int)$_GET['semester_id'];
 }
 
-// If no semester is set in the session yet (e.g., first visit after login), set a default.
 if (!isset($_SESSION['selected_semester_id'])) {
-    // Default to the most recent semester ID from the database
     $stmt_default_sem = $pdo->query("SELECT id FROM semesters ORDER BY id DESC LIMIT 1");
     $_SESSION['selected_semester_id'] = $stmt_default_sem->fetchColumn();
 }
-
-// Now, every page can use this session variable as the source of truth.
 $selected_semester_id = $_SESSION['selected_semester_id'];
-// --- END OF NEW LOGIC ---
 
 
 // Determine which page to show. Default to dashboard.
@@ -42,7 +35,7 @@ $allowed_pages = [
 ];
 
 if (!in_array($page, $allowed_pages)) {
-    $page = 'dashboard'; // Default to dashboard if page is not allowed
+    $page = 'dashboard'; 
 }
 
 $page_file = "pages/{$page}.php";
@@ -51,7 +44,7 @@ $page_file = "pages/{$page}.php";
 include 'includes/header.php';
 
 ?>
-<!-- This is the main container that was hidden in your original HTML -->
+<!-- This is the main container that was hidden in original HTML -->
 <div id="portal-main-container">
     <!-- Main Content Container -->
     <div class="page-container">
@@ -76,11 +69,9 @@ include 'includes/header.php';
         <!-- Main Content -->
         <div class="main-content">
             <?php
-            // Dynamically include the content of the requested page
             if (file_exists($page_file)) {
                 include $page_file;
             } else {
-                // If the file doesn't exist, show the dashboard as a fallback
                 include 'pages/dashboard.php';
             }
             ?>
@@ -90,11 +81,8 @@ include 'includes/header.php';
     <?php include 'includes/footer.php'; ?>
 </div>
 
-<!-- All modals can be placed here inside the footer include if you prefer -->
-<!-- Course Details Modal from your original HTML -->
-<div class="modal" id="course-modal">
-    <!-- ... (paste the entire #course-modal div here) ... -->
-</div>
+<!-- Course Details Modal from original HTML -->
+<div class="modal" id="course-modal"></div>
 <div id="toast-notification" class="toast-notification"></div>
 
 <script src="./assets/index.js"></script>

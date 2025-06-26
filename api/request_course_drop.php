@@ -1,12 +1,10 @@
 <?php
-// api/request_course_drop.php
 header('Content-Type: application/json');
 require_once '../includes/auth_check.php';
 require_once '../config/database.php';
 
-// Only allow POST requests
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405); // Method Not Allowed
+    http_response_code(405); 
     echo json_encode(['error' => 'Only POST method is accepted.']);
     exit;
 }
@@ -15,7 +13,7 @@ $data = json_decode(file_get_contents('php://input'), true);
 $section_id = $data['section_id'] ?? null;
 
 if (empty($section_id)) {
-    http_response_code(400); // Bad Request
+    http_response_code(400); 
     echo json_encode(['error' => 'Section ID not provided.']);
     exit;
 }

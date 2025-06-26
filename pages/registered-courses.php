@@ -1,11 +1,9 @@
 <?php
-// pages/registered-courses.php
-
 // Get all semesters to populate the dropdown
 $semesters_stmt = $pdo->query("SELECT * FROM semesters ORDER BY id DESC");
 $all_semesters = $semesters_stmt->fetchAll();
 
-// Determine the selected semester (default to the first one if not set)
+// Determine the selected semester 
 $selected_semester_id = $_GET['semester_id'] ?? ($all_semesters[2]['id'] ?? null);
 
 $registered_courses = [];
@@ -30,7 +28,6 @@ if ($selected_semester_id) {
     // Calculate credit summary
     foreach ($registered_courses as $course) {
         $total_credits += $course['credits'];
-        // Simple heuristic to differentiate lab/theory credits
         if (stripos($course['title'], 'lab') !== false) {
             $lab_credits += $course['credits'];
         } else {
@@ -105,7 +102,6 @@ if ($selected_semester_id) {
                             <td><?php echo htmlspecialchars($course['room']); ?></td>
                             <td><?php echo htmlspecialchars($course['faculty_name']); ?></td>
                             <td>
-                                <!-- ** THE CORRECTED BUTTON ** -->
                                 <button class="btn btn-sm view-course-details-btn">
                                     <i class="fas fa-info-circle"></i> View
                                 </button>

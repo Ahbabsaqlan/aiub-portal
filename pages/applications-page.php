@@ -1,7 +1,5 @@
 <?php
-// pages/applications-page.php
-
-// --- 1. Check for Active Registration Status ---
+// --- Check for Active Registration Status ---
 $stmt_sem = $pdo->query("SELECT * FROM semesters WHERE is_active_registration = 1 LIMIT 1");
 $current_semester = $stmt_sem->fetch();
 
@@ -17,13 +15,12 @@ if ($has_registration) {
     ];
 }
 
-// --- 2. Fetch Other Application Statuses ---
+// --- Fetch Other Application Statuses ---
 $stmt_apps = $pdo->prepare("SELECT * FROM applications WHERE student_id = ? ORDER BY request_date DESC");
 $stmt_apps->execute([$current_student['id']]);
 $other_applications = $stmt_apps->fetchAll();
 
 foreach ($other_applications as $app) {
-    // A more readable title for the 'Course Drop' application type
     $title = $app['application_type'];
     if ($app['application_type'] === 'Course Drop') {
          if (preg_match('/course: ([\w\s]+) - ([\w\s\d\(\)]+)\s\(Section\s([\w\d]+)\)/', $app['details'], $matches)) {

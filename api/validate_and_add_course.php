@@ -1,5 +1,4 @@
 <?php
-// api/validate_and_add_course.php
 header('Content-Type: application/json');
 require_once '../includes/auth_check.php';
 require_once '../config/database.php';
@@ -15,15 +14,14 @@ if (empty($section_id_to_add)) {
 }
 
 $student_id = $_SESSION['user_id'];
-$active_semester_id = 1; // Assuming Spring 2024 is ID 1
+$active_semester_id = 1; 
 
-// ** NEW, ROBUST PARSING FUNCTION **
 function parse_schedule_slot($time_string) {
     if (empty($time_string)) return null;
 
     // Use regex to capture days and times, allowing for formats with or without spaces
     if (!preg_match('/^([a-zA-Z]+)\s*([\d]{2}:[\d]{2}-[\d]{2}:[\d]{2})$/', $time_string, $matches)) {
-        return null; // Does not match pattern like "ST 08:30-10:00" or "M09:00-10:30"
+        return null; 
     }
     
     $days_str = $matches[1];
@@ -46,7 +44,6 @@ function parse_schedule_slot($time_string) {
 
     list($start, $end) = explode('-', $time_range);
     
-    // Convert time to a comparable integer (e.g., 08:30 -> 830)
     $start_int = (int)str_replace(':', '', $start);
     $end_int = (int)str_replace(':', '', $end);
 

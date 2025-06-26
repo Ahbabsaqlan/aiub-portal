@@ -1,6 +1,4 @@
 <?php
-// pages/drop-course-application-page.php
-
 // --- Get current semester info ---
 $stmt_sem = $pdo->query("SELECT * FROM semesters WHERE is_active_registration = 1 LIMIT 1");
 $current_semester = $stmt_sem->fetch();
@@ -27,14 +25,13 @@ $stmt_hist = $pdo->prepare("
 $stmt_hist->execute([$current_student['id']]);
 $drop_history = $stmt_hist->fetchAll();
 
-// --- **THE CRUCIAL FIX: Check which courses already have a pending drop request** ---
+// --- Check which courses already have a pending drop request ---
 $pending_requests = array_filter($drop_history, function($req) {
     return $req['status'] === 'Pending';
 });
 
 $pending_course_codes = [];
 foreach ($pending_requests as $req) {
-    // Extract course code from the details string, e.g., "Request to drop course: CSE3205..."
     if (preg_match('/course: ([\w\s]+) -/', $req['details'], $matches)) {
         $pending_course_codes[] = trim($matches[1]);
     }
@@ -123,9 +120,7 @@ foreach ($pending_requests as $req) {
 
 
 <script>
-// This script is scoped to this page
 document.addEventListener('DOMContentLoaded', function() {
-    // A robust way to check for the global toast function
     const showToast = typeof window.showToast === 'function' 
         ? window.showToast 
         : (msg, type) => alert(`${type.toUpperCase()}: ${msg}`);
@@ -135,7 +130,7 @@ document.addEventListener('DOMContentLoaded', function() {
             event.preventDefault();
             
             const submitBtn = form.querySelector('button[type="submit"]');
-            submitBtn.disabled = true; // Disable immediately
+            submitBtn.disabled = true; 
 
             const sectionId = this.dataset.sectionId;
             const courseCode = this.dataset.courseCode;
@@ -163,18 +158,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     throw new Error(result.error || 'An unknown error occurred.');
                 }
 
-                // --- DYNAMIC UI UPDATE ---
+                
 
-                // 1. Show success toast
+                // Show success toast
                 showToast(`Drop request for ${courseCode} - Section ${sectionChar} submitted.`, 'success');
 
-                // 2. Change the button's appearance
+                // Change the button's appearance
                 submitBtn.innerHTML = 'Drop Requested';
                 submitBtn.classList.remove('btn-danger');
                 submitBtn.classList.add('btn-warning');
-                // The button remains disabled
 
-                // 3. Dynamically add a new row to the history table
                 const historyTable = document.getElementById('drop-history-table');
                 const noHistoryP = document.querySelector('#drop-history-table-container .no-results');
                 
@@ -190,7 +183,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
 
                 const historyTableBody = document.getElementById('drop-history-table').querySelector('tbody');
-                const newRow = historyTableBody.insertRow(0); // Insert at the top
+                const newRow = historyTableBody.insertRow(0); 
                 const today = new Date().toISOString().slice(0, 10);
 
                 newRow.innerHTML = `

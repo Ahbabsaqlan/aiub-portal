@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     throw new Error(errorData.error || 'Failed to fetch course details');
                 }
                 const data = await response.json();
-                populateModal(data); // Call the corrected populate function
+                populateModal(data); 
             } catch (error) {
                 console.error("Modal fetch error:", error);
                 showToast(`Error: ${error.message}`, 'error');
@@ -63,9 +63,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        // ** THIS IS THE CORRECTED POPULATE FUNCTION **
         function populateModal(data) {
-            // Destructure the data object to access the nested parts
             const { overview, faculty, consulting, notes, assignments, notices, results } = data;
             
             // -- Overview Tab --
@@ -97,7 +95,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 consultingSchedule.innerHTML = '<p>No consulting hours available.</p>';
             }
             
-            // -- Notes, Assignments, Notices, and Results Tabs (Populate similarly) --
             // Example for Notices:
             const noticesContainer = courseModal.querySelector('#notices-tab');
             noticesContainer.innerHTML = '<h4><i class="fas fa-bullhorn"></i> Course Notices</h4>';
@@ -109,7 +106,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 noticesContainer.innerHTML += '<p>No notices for this course.</p>';
             }
             
-            // Reset to the first tab
             modalTabs.forEach((tab, index) => tab.classList.toggle('active', index === 0));
             courseModal.querySelectorAll('.tab-content').forEach((content, index) => content.classList.toggle('active', index === 0));
         }
@@ -191,7 +187,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // --- ** NEW: EXAM SCHEDULE TAB SWITCHING LOGIC ** ---
     const examSchedulePage = document.getElementById('exam-schedule');
     if (examSchedulePage) {
         const examTabs = examSchedulePage.querySelectorAll('.exam-tab');
@@ -199,14 +194,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
         examTabs.forEach(tab => {
             tab.addEventListener('click', function() {
-                // Deactivate all tabs and content first
                 examTabs.forEach(t => t.classList.remove('active'));
                 examContents.forEach(c => c.classList.remove('active'));
 
-                // Activate the clicked tab
                 this.classList.add('active');
                 
-                // Activate the corresponding content
                 const targetContentId = `${this.dataset.examType}-exams`;
                 const targetContent = document.getElementById(targetContentId);
                 if (targetContent) {

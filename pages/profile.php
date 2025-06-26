@@ -1,9 +1,4 @@
 <?php
-// pages/profile.php
-
-// --- THIS IS THE NEW, CORRECTED LOGIC ---
-// Calculate the student's real-time academic summary from the results table.
-// This ensures the data is always up-to-date.
 $stmt_summary = $pdo->prepare("
     SELECT 
         -- Calculate CGPA: (SUM of (grade_point * credits)) / (SUM of credits)
@@ -17,12 +12,9 @@ $stmt_summary = $pdo->prepare("
 $stmt_summary->execute([$current_student['id']]);
 $academic_summary = $stmt_summary->fetch();
 
-// Assign the calculated values, with fallbacks to 0 if no results exist yet.
 $live_cgpa = $academic_summary['cgpa'] ?? 0.00;
 $live_credits_completed = $academic_summary['credits_completed'] ?? 0;
-// --- END OF NEW LOGIC ---
 
-// The $current_student variable is still available for personal info from index.php
 ?>
 <section id="profile" class="page-content">
     <h2 class="page-title"><i class="fas fa-user-graduate"></i> Student Profile</h2>
@@ -68,13 +60,11 @@ $live_credits_completed = $academic_summary['credits_completed'] ?? 0;
     <div class="form-row">
         <div class="form-col">
             <div class="form-group"><label for="cgpa">Cumulative GPA</label>
-                <!-- Use the new live calculated value -->
                 <input type="text" id="cgpa" class="form-control" value="<?php echo number_format($live_cgpa, 2); ?>" readonly>
             </div>
         </div>
         <div class="form-col">
             <div class="form-group"><label for="creditsCompleted">Credits Completed</label>
-                <!-- Use the new live calculated value -->
                 <input type="text" id="creditsCompleted" class="form-control" value="<?php echo (int)$live_credits_completed; ?>" readonly>
             </div>
         </div>
@@ -82,7 +72,7 @@ $live_credits_completed = $academic_summary['credits_completed'] ?? 0;
     
     <div class="action-buttons"><button class="btn" id="request-change-btn"><i class="fas fa-edit"></i> Request Profile Change</button><button class="btn"><i class="fas fa-file-pdf"></i> Download Profile</button></div>
     
-    <!-- Change Request Form (JS handled) -->
+    <!-- Change Request Form  -->
     <div class="change-form" id="change-request-form" style="display: none;">
         <h3>Request Profile Change</h3>
         <div class="form-group"><label for="changeField">Field to Change</label><select id="changeField" class="form-control"><option value="">Select field</option><option value="phone">Phone Number</option><option value="address">Home Address</option><option value="emergency">Emergency Contact</option></select></div>

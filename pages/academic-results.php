@@ -1,6 +1,4 @@
 <?php
-// pages/academic-results.php
-
 // --- Get all semesters the student has results for ---
 $semesters_stmt = $pdo->prepare("
     SELECT DISTINCT s.id, s.name, s.semester_key 
@@ -11,7 +9,6 @@ $semesters_stmt = $pdo->prepare("
 ");
 $semesters_stmt->execute([$current_student['id']]);
 $all_semesters = $semesters_stmt->fetchAll();
-// Manually add the current "In Progress" semester to the top of the list if not present
 if (!in_array(1, array_column($all_semesters, 'id'))) {
     array_unshift($all_semesters, ['id' => 1, 'name' => 'Spring 2023-2024', 'semester_key' => 'spring2024']);
 }
@@ -29,7 +26,7 @@ $results_stmt->execute([$current_student['id'], $selected_semester_id]);
 $completed_courses = $results_stmt->fetchAll();
 
 $inprogress_courses = [];
-if ($selected_semester_id == 1) { // Assuming Spring 2024 is active semester ID 1
+if ($selected_semester_id == 1) { 
     $inprogress_stmt = $pdo->prepare("
         SELECT 'IP' as grade, NULL as grade_point, NULL as midterm_score, NULL as final_score, NULL as quiz_score, c.*, s.section_char
         FROM registrations rg

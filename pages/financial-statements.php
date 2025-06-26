@@ -1,6 +1,4 @@
 <?php
-// pages/financial-statements.php
-
 // Get all semesters for which the student has financial transactions
 $semesters_stmt = $pdo->prepare("
     SELECT DISTINCT s.id, s.name FROM financial_transactions ft
@@ -28,17 +26,15 @@ if ($selected_semester_id) {
     $transactions = $transactions_stmt->fetchAll();
 
     foreach($transactions as $trx) {
-        //$total_amount += $trx['amount'];
         if ($trx['status'] === 'Completed') {
             $total_paid += $trx['amount'];
         }
     }
 
-    // --- Dynamically calculate the fee breakdown for the selected semester ---
-    // (This is a simplified model. A real UMS would have complex fee rules)
+    
     $per_credit_fee = 5500;
     $registration_fee = 10000;
-    $other_fees = 15000; // Library, activity, etc.
+    $other_fees = 15000; 
 
     // Get registered credits for the semester
     $credits_stmt = $pdo->prepare("
@@ -59,7 +55,6 @@ if ($selected_semester_id) {
         ['type' => 'Other Fees (Library, Activity, etc.)', 'amount' => $other_fees]
     ];
     
-    // Use calculated total if no transactions exist yet
     if ($total_amount == 0) {
         $total_amount = $tuition_fee + $registration_fee + $other_fees;
     }
@@ -117,7 +112,7 @@ if ($selected_semester_id) {
             </div>
         </div>
         
-        <!-- Payment History Section (Initially Hidden) -->
+        <!-- Payment History Section -->
         <div class="page-content" id="payment-history" style="display: none; margin-top: 2rem; padding:0; box-shadow: none; border: 1px solid #eee; border-radius: var(--border-radius);">
             <h3 class="page-title" style="padding: 1rem; margin-bottom:0; border-bottom: 1px solid #eee; background-color: #f8f9fa; border-radius: var(--border-radius) var(--border-radius) 0 0;"><i class="fas fa-history"></i> Payment History</h3>
             <div class="table-container" style="margin-top:0;">
@@ -148,7 +143,6 @@ if ($selected_semester_id) {
 </section>
 
 <script>
-// This script is scoped to this page to avoid conflicts.
 document.addEventListener('DOMContentLoaded', function() {
     const historyBtn = document.getElementById('view-payment-history-btn');
     const historySection = document.getElementById('payment-history');

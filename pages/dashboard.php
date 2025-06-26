@@ -1,6 +1,4 @@
 <?php
-// pages/dashboard.php
-
 // --- Calculate Real CGPA and Completed Credits ---
 $stmt_cgpa = $pdo->prepare("SELECT SUM(ar.grade_point * c.credits) / SUM(c.credits) as cgpa, SUM(c.credits) as credits_completed FROM academic_results ar JOIN courses c ON ar.course_id = c.id WHERE ar.student_id = ? AND ar.grade_point > 0");
 $stmt_cgpa->execute([$current_student['id']]);
@@ -13,7 +11,7 @@ $stmt_credits = $pdo->prepare("SELECT IFNULL(SUM(c.credits), 0) as current_credi
 $stmt_credits->execute([$current_student['id']]);
 $current_credits_info = $stmt_credits->fetch();
 
-// --- REVISED: Fetch and Process FULL Weekly Schedule for Dashboard ---
+// --- Fetch and Process FULL Weekly Schedule for Dashboard ---
 $stmt_schedule = $pdo->prepare("
     SELECT c.course_code, c.title, s.schedule_time, s.room
     FROM registrations rg
@@ -61,8 +59,7 @@ foreach ($schedule_courses as $course) {
     }
 }
 
-// --- NEW: Fetch and Combine Upcoming Deadlines ---
-// Get IDs of courses the student is registered for in the current semester (ID=1)
+// --- Fetch and Combine Upcoming Deadlines ---
 $stmt_registered = $pdo->prepare("SELECT s.id as section_id, c.id as course_id FROM registrations rg JOIN sections s ON rg.section_id = s.id JOIN courses c ON s.course_id = c.id WHERE rg.student_id = ? AND s.semester_id = 1");
 $stmt_registered->execute([$current_student['id']]);
 $registered_courses_info = $stmt_registered->fetchAll();
@@ -107,7 +104,7 @@ usort($upcoming_deadlines, function($a, $b) {
     return $a['date'] <=> $b['date'];
 });
 
-// --- Fetch recent announcements (from previous response) ---
+// --- Fetch recent announcements  ---
 $stmt_announcements = $pdo->query("SELECT * FROM announcements ORDER BY publish_date DESC LIMIT 3");
 $announcements = $stmt_announcements->fetchAll();
 
@@ -139,7 +136,7 @@ $announcements = $stmt_announcements->fetchAll();
             <div class="card-body schedule-container" id="dashboard-schedule-content">
                 <?php
                 $has_classes = false;
-                $current_day_name = date('l'); // Get current day name, e.g., "Tuesday"
+                $current_day_name = date('l'); 
                 $day_icons = ['Sunday' => 'fa-sun', 'Monday' => 'fa-cloud', 'Tuesday' => 'fa-calendar-day', 'Wednesday' => 'fa-cloud-sun', 'Thursday' => 'fa-cloud-rain', 'Friday' => 'fa-wind', 'Saturday' => 'fa-star'];
                 
                 foreach ($weekly_schedule as $day => $classes) {
@@ -152,7 +149,6 @@ $announcements = $stmt_announcements->fetchAll();
                         echo "<div class='schedule-day'>";
                         echo "<div class='{$day_header_class}'><i class='fas {$day_icon}'></i> {$day} " . ($is_today ? '(Today)' : '') . "</div>";
                         
-                        // Sort classes by time for the day
                         usort($classes, function($a, $b) {
                             $time_a = explode(' ', $a['schedule_time'])[1] ?? '00:00';
                             $time_b = explode(' ', $b['schedule_time'])[1] ?? '00:00';
@@ -219,20 +215,20 @@ $announcements = $stmt_announcements->fetchAll();
             </div>
         </div>
 
-        <!-- Upcoming Deadlines Card (Now fully dynamic and consolidated) -->
+        <!-- Upcoming Deadlines Card  -->
         <div class="card">
             <div class="card-header"><h2><i class="fas fa-exclamation-triangle"></i> Upcoming Deadlines</h2><div class="icon"><i class="fas fa-clock"></i></div></div>
             <div class="card-body">
                 <?php if (empty($upcoming_deadlines)): ?>
                     <p>No upcoming deadlines found.</p>
                 <?php else: ?>
-                    <?php foreach(array_slice($upcoming_deadlines, 0, 3) as $deadline): // Show top 3
+                    <?php foreach(array_slice($upcoming_deadlines, 0, 3) as $deadline): 
                         $today = new DateTime();
                         $interval = $today->diff($deadline['date']);
-                        $days_left = $interval->invert ? 0 : $interval->days; // if date is in the past, days_left is 0
+                        $days_left = $interval->invert ? 0 : $interval->days; 
                         
                         $color_class = 'var(--success)';
-                        $border_class = 'var(--lecture)'; // Default blue
+                        $border_class = 'var(--lecture)'; 
                         if ($deadline['type'] === 'exam') $border_class = 'var(--danger)';
                         if ($deadline['type'] === 'assignment') $border_class = 'var(--warning)';
 

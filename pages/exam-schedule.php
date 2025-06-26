@@ -1,6 +1,4 @@
 <?php
-// pages/exam-schedule.php
-
 // Get IDs of courses the student is registered for in the current semester (ID=1)
 $stmt_registered = $pdo->prepare("
     SELECT c.id FROM registrations rg
@@ -14,7 +12,6 @@ $registered_course_ids = $stmt_registered->fetchAll(PDO::FETCH_COLUMN);
 $quizzes = $midterms = $finals = [];
 
 if (!empty($registered_course_ids)) {
-    // Create placeholders for IN clause
     $placeholders = rtrim(str_repeat('?,', count($registered_course_ids)), ',');
 
     // Fetch all exams for these courses

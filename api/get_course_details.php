@@ -1,5 +1,4 @@
 <?php
-// api/get_course_details.php
 header('Content-Type: application/json');
 require_once '../includes/auth_check.php';
 require_once '../config/database.php';
@@ -14,7 +13,6 @@ if (!$course_code) {
 }
 
 try {
-    // Step 1: Find the section ID for the student in the given semester
     $stmt_section = $pdo->prepare("
         SELECT s.id as section_id
         FROM registrations rg
@@ -31,7 +29,6 @@ try {
     $section = $stmt_section->fetch();
     $section_id = $section['section_id'] ?? null;
 
-    // Step 2: Fetch all details based on course_code and section_id
     $stmt = $pdo->prepare("
         SELECT 
             c.course_code, c.title, c.credits, c.description,
@@ -51,7 +48,6 @@ try {
     $details = $stmt->fetch();
     
     if ($details) {
-        // Step 3: Fetch related data like assignments and notices if section is known
         $assignments = [];
         $notices = [];
         if ($section_id) {
@@ -64,7 +60,6 @@ try {
             $notices = $stmt_notice->fetchAll();
         }
 
-        // Step 4: Prepare final JSON response structure
         $response_data = [
             'overview' => [
                 'course_code' => $details['course_code'],
@@ -83,11 +78,11 @@ try {
                 'office' => $details['faculty_office'] ?? 'N/A',
                 'education' => $details['faculty_education'] ?? 'N/A'
             ],
-            'consulting' => [['day' => 'Monday', 'time' => '02:00 PM - 04:00 PM']], // Mocked for now
-            'notes' => [['title' => 'Chapter 1: Intro', 'date' => 'Mar 1, 2024', 'size' => '2.5 MB']], // Mocked
+            'consulting' => [['day' => 'Monday', 'time' => '02:00 PM - 04:00 PM']], 
+            'notes' => [['title' => 'Chapter 1: Intro', 'date' => 'Mar 1, 2024', 'size' => '2.5 MB']], 
             'assignments' => $assignments,
             'notices' => $notices,
-            'results' => [] // Results would be fetched on the results page, not in the modal
+            'results' => [] 
         ];
 
         echo json_encode($response_data);

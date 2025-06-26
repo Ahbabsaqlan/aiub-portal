@@ -1,6 +1,4 @@
 <?php
-// pages/registration-schedule.php
-
 // --- Get the active semester ---
 $stmt_sem = $pdo->query("SELECT * FROM semesters WHERE is_active_registration = 1 LIMIT 1");
 $active_semester = $stmt_sem->fetch();
@@ -13,7 +11,7 @@ if (!$active_semester) {
 $student_id = $current_student['id'];
 $active_semester_id = $active_semester['id'];
 
-// --- 1. Get IDs of all courses the student has EVER taken ---
+// --- Get IDs of all courses the student has EVER taken ---
 $stmt_completed = $pdo->prepare("SELECT course_id FROM academic_results WHERE student_id = ?");
 $stmt_completed->execute([$student_id]);
 $completed_course_ids = $stmt_completed->fetchAll(PDO::FETCH_COLUMN);
@@ -25,7 +23,7 @@ $registered_course_ids = array_column($registered_courses_info, 'course_id');
 
 $ineligible_course_ids = array_unique(array_merge($completed_course_ids, $registered_course_ids));
 
-// --- 2. Get all available program courses, EXCLUDING the ineligible ones ---
+// --- Get all available program courses, EXCLUDING the ineligible ones ---
 $sql_courses = "
     SELECT c.course_code, c.title, c.credits, 
     (SELECT COUNT(*) FROM sections s WHERE s.course_id = c.id AND s.semester_id = ?) as section_count 
@@ -44,9 +42,6 @@ $stmt_courses = $pdo->prepare($sql_courses);
 $stmt_courses->execute($params);
 $program_courses = $stmt_courses->fetchAll();
 
-// --- 3. Pass the currently registered courses to JavaScript for time-conflict checks ---
-// ** THIS IS THE CORRECTED LINE **
-// We now pass the original indexed array of registered course objects.
 echo "<script>const alreadyRegisteredCourses = " . json_encode($registered_courses_info) . ";</script>";
 ?>
 
@@ -63,7 +58,6 @@ echo "<script>const alreadyRegisteredCourses = " . json_encode($registered_cours
             <p class="no-results">No courses selected yet. Add courses from the list below.</p>
         </div>
         <div style="text-align: right; margin-top: 1.5rem;" id="final-confirm-button-container">
-            <!-- Confirm button will be dynamically added here by JS -->
         </div>
     </div>
     <hr style="margin: 0 0 2rem 0;">

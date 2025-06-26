@@ -1,7 +1,4 @@
 <?php
-// includes/header.php
-
-// This file is included by index.php, so $pdo and $current_student are available.
 // Get section IDs for the student's current registration
 $stmt_sections = $pdo->prepare("
     SELECT s.id FROM registrations rg 
@@ -38,8 +35,6 @@ if(!empty($section_ids)) {
     <link rel="stylesheet" href="./assets/style.css">
 </head>
 <body>
-    <!-- The login overlay is now on its own page (login.php) -->
-
     <!-- Header Section -->
     <header>
         <div class="header-container">

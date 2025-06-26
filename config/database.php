@@ -1,9 +1,8 @@
 <?php
-// config/database.php
 $host = 'localhost';
 $dbname = 'aiub-portal';
-$username = 'root'; // Your DB username (default for XAMPP)
-$password = ''; // Your DB password (default for XAMPP)
+$username = 'root'; 
+$password = '';
 
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
