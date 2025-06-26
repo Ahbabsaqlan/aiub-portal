@@ -12,6 +12,24 @@ if (!$current_student) {
     exit;
 }
 
+// --- NEW SESSION-BASED SEMESTER LOGIC ---
+// If a semester_id is passed in the URL (from a dropdown change), update the session.
+if (isset($_GET['semester_id'])) {
+    $_SESSION['selected_semester_id'] = (int)$_GET['semester_id'];
+}
+
+// If no semester is set in the session yet (e.g., first visit after login), set a default.
+if (!isset($_SESSION['selected_semester_id'])) {
+    // Default to the most recent semester ID from the database
+    $stmt_default_sem = $pdo->query("SELECT id FROM semesters ORDER BY id DESC LIMIT 1");
+    $_SESSION['selected_semester_id'] = $stmt_default_sem->fetchColumn();
+}
+
+// Now, every page can use this session variable as the source of truth.
+$selected_semester_id = $_SESSION['selected_semester_id'];
+// --- END OF NEW LOGIC ---
+
+
 // Determine which page to show. Default to dashboard.
 $page = $_GET['page'] ?? 'dashboard';
 

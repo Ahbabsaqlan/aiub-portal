@@ -1,7 +1,7 @@
 <?php
 // config/database.php
 $host = 'localhost';
-$dbname = 'aiub_portal';
+$dbname = 'aiub-portal';
 $username = 'root'; // Your DB username (default for XAMPP)
 $password = ''; // Your DB password (default for XAMPP)
 

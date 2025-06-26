@@ -2059,7 +2059,9 @@ footer {
 .toast-notification.success { background-color: var(--success); }
 .toast-notification.error { background-color: var(--danger); }
 .toast-notification.warning { background-color: var(--warning); color: var(--dark); }
-
+.dashboard-grid {
+    align-items: start; /* This is the magic property! */
+}
 
 
 /* Responsive Design */

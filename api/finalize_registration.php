@@ -1,4 +1,5 @@
 <?php
+// api/finalize_registration.php
 header('Content-Type: application/json');
 require_once '../includes/auth_check.php';
 require_once '../config/database.php';
@@ -25,25 +26,28 @@ $student_id = $_SESSION['user_id'];
 $pdo->beginTransaction();
 
 try {
-    // Check for conflicts and capacity before inserting
+    // Optional: Re-validate for capacity one last time before inserting
     foreach ($section_ids as $section_id) {
-        // You would add more robust checks here (e.g., against already registered courses, time conflicts on the server-side)
-        
-        // Check capacity
-        $stmt = $pdo->prepare("SELECT enrolled, capacity FROM sections WHERE id = ?");
-        $stmt->execute([$section_id]);
-        $section = $stmt->fetch();
+        $stmt_capacity = $pdo->prepare("SELECT enrolled, capacity FROM sections WHERE id = ? FOR UPDATE");
+        $stmt_capacity->execute([$section_id]);
+        $section = $stmt_capacity->fetch();
         if ($section['enrolled'] >= $section['capacity']) {
-            throw new Exception("Section ID $section_id is already full.");
+            throw new Exception("A selected course (Section ID: $section_id) became full just now. Please try again.");
         }
     }
     
-    // If all checks pass, proceed with registration
-    $stmt_insert = $pdo->prepare("INSERT INTO registrations (student_id, section_id, grade) VALUES (?, ?, 'IP')");
-    $stmt_update = $pdo->prepare("UPDATE sections SET enrolled = enrolled + 1 WHERE id = ?");
+    // ** THE CORRECTED INSERT STATEMENT **
+    // The 'grade' column is removed as it does not exist in the 'registrations' table.
+    $stmt_insert = $pdo->prepare("
+        INSERT INTO registrations (student_id, section_id) 
+        VALUES (?, ?)
+    ");
+    
+    $stmt_update = $pdo->prepare("
+        UPDATE sections SET enrolled = enrolled + 1 WHERE id = ?
+    ");
 
     foreach ($section_ids as $section_id) {
-        // Sanitize to ensure it's an integer
         $section_id = (int)$section_id;
         
         // Insert into registrations table
@@ -54,10 +58,11 @@ try {
     }
 
     $pdo->commit();
-    echo json_encode(['success' => true, 'message' => 'Registration completed successfully!']);
+    echo json_encode(['success' => true, 'message' => 'Registration completed successfully! Redirecting...']);
 
 } catch (Exception $e) {
     $pdo->rollBack();
-    http_response_code(500);
+    http_response_code(500); // Internal Server Error
+    // Provide a more user-friendly error from the caught exception
     echo json_encode(['error' => 'Registration failed: ' . $e->getMessage()]);
 }

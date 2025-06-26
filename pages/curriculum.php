@@ -1,9 +1,38 @@
 <?php
 // pages/curriculum.php
+
+$stmt = $pdo->prepare("
+    SELECT cur.semester_level, c.course_code, c.title, c.credits, c.course_type
+    FROM curriculum cur
+    JOIN courses c ON cur.course_id = c.id
+    WHERE cur.program_name = ?
+    ORDER BY cur.semester_level, c.course_code
+");
+$stmt->execute([$current_student['program']]);
+$curriculum_courses = $stmt->fetchAll();
+
+// Group courses by semester level
+$grouped_curriculum = [];
+foreach ($curriculum_courses as $course) {
+    $grouped_curriculum[$course['semester_level']][] = $course;
+}
+
 ?>
 <section id="curriculum" class="page-content">
-    <h2 class="page-title"><i class="fas fa-sitemap"></i> Curriculum - BSc in CS&E</h2>
-    <div class="curriculum-semester"><h3><i class="fas fa-layer-group"></i> Semester 1: Foundation</h3><ul class="curriculum-courses"><li><div class="course-code-title"><i class="fas fa-atom"></i> PHY 1101 - Physics I</div> <span class="course-credits">3 Credits</span></li><li><div class="course-code-title"><i class="fas fa-flask"></i> PHY 1102 - Physics I Lab</div> <span class="course-credits">1 Credit</span></li><li><div class="course-code-title"><i class="fas fa-calculator"></i> MAT 1102 - Differential Calculus & Co-ordinate Geometry</div> <span class="course-credits">3 Credits</span></li><li><div class="course-code-title"><i class="fas fa-comments"></i> ENG 1101 - English Reading Skills & Public Speaking</div> <span class="course-credits">3 Credits</span></li><li><div class="course-code-title"><i class="fas fa-desktop"></i> CSC 1101 - Introduction to Computer Studies</div> <span class="course-credits">1 Credit</span></li></ul></div>
-    <div class="curriculum-semester"><h3><i class="fas fa-layer-group"></i> Semester 2: Programming Fundamentals</h3><ul class="curriculum-courses"><li><div class="course-code-title"><i class="fas fa-code"></i> CSC 1203 - Programming Language I (Structured)</div> <span class="course-credits">3 Credits</span></li><li><div class="course-code-title"><i class="fas fa-laptop-code"></i> CSC 1204 - Programming Language I Lab</div> <span class="course-credits">1 Credit</span></li><li><div class="course-code-title"><i class="fas fa-infinity"></i> MAT 1205 - Integral Calculus & ODE</div> <span class="course-credits">3 Credits</span></li><li><div class="course-code-title"><i class="fas fa-pen-alt"></i> ENG 1202 - English Writing Skills & Communication</div> <span class="course-credits">3 Credits</span></li><li><div class="course-code-title"><i class="fas fa-bolt"></i> EEE 1208 - Electrical Circuits Analysis Lab</div> <span class="course-credits">1 Credit</span></li></ul></div>
-    <!-- ... You can add more semesters as needed -->
+    <h2 class="page-title"><i class="fas fa-sitemap"></i> Curriculum - <?php echo htmlspecialchars($current_student['program']); ?></h2>
+    <?php foreach($grouped_curriculum as $semester_level => $courses): ?>
+        <div class="curriculum-semester">
+            <h3><i class="fas fa-layer-group"></i> Semester <?php echo $semester_level; ?></h3>
+            <ul class="curriculum-courses">
+                <?php foreach($courses as $course): ?>
+                <li>
+                    <div class="course-code-title">
+                        <i class="fas fa-book"></i> <?php echo htmlspecialchars($course['course_code']); ?> - <?php echo htmlspecialchars($course['title']); ?>
+                    </div> 
+                    <span class="course-credits"><?php echo number_format($course['credits'], 1); ?> Credits</span>
+                </li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+    <?php endforeach; ?>
 </section>
