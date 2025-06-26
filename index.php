@@ -11,7 +11,6 @@ if (!$current_student) {
     exit;
 }
 
-// --- NEW SESSION-BASED SEMESTER LOGIC ---
 if (isset($_GET['semester_id'])) {
     $_SESSION['selected_semester_id'] = (int)$_GET['semester_id'];
 }
